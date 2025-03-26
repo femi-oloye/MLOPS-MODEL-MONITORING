@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import os
 
-# Load Dataset (Titanic or Credit Card Fraud)
+# Load Dataset
 def load_data():
     df = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
     
@@ -18,7 +18,7 @@ def load_data():
     X = df[["Pclass", "Sex", "Age", "Fare"]]
     y = df["Survived"]
     
-    return train_test_split(X, y, test_size=0.2, random_state=42,stratify=y)
+    return train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # Train Model
 def train_and_log_model():
@@ -46,7 +46,9 @@ def train_and_log_model():
         mlflow.log_metric("precision", precision)
         mlflow.log_metric("recall", recall)
         mlflow.log_metric("f1_score", f1)
-        mlflow.sklearn.log_model(model, "model")
+        
+        # Fix: Provide input example
+        mlflow.sklearn.log_model(model, "model", input_example=X_train.iloc[:1])
     
     print(f"Model trained and logged successfully! Accuracy: {accuracy:.2f}")
 
