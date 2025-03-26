@@ -21,6 +21,7 @@ def load_data():
     return train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # Train Model
+# Train Model
 def train_and_log_model():
     X_train, X_test, y_train, y_test = load_data()
     
@@ -36,7 +37,7 @@ def train_and_log_model():
     f1 = f1_score(y_test, y_pred)
     
     # Log to MLflow
-    mlflow.set_tracking_uri("http://localhost:6000")  # Ensure MLflow is running
+    mlflow.set_tracking_uri("http://localhost:6001")  # Ensure MLflow is running
     mlflow.set_experiment("Titanic-Survival-Prediction")
 
     with mlflow.start_run():
@@ -47,8 +48,13 @@ def train_and_log_model():
         mlflow.log_metric("recall", recall)
         mlflow.log_metric("f1_score", f1)
         
-        # Fix: Provide input example
-        mlflow.sklearn.log_model(model, "model", input_example=X_train.iloc[:1])
+     # ✅ Store the correct model URI
+        model_info = mlflow.sklearn.log_model(model, "model", input_example=X_train.iloc[:1])
+        model_uri = model_info.model_uri  # ✅ Extract the correct URI
+
+# ✅ Register the model
+        mlflow.register_model(model_uri, "Titanic-Survival-Prediction")
+
     
     print(f"Model trained and logged successfully! Accuracy: {accuracy:.2f}")
 
